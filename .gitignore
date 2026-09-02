@@ -13,6 +13,14 @@
 # testing
 /coverage
 
+# AI Agent folders & tool configs
+.agents/
+.claude/
+.cursor/
+.devin/
+AGENTS.md
+CLAUDE.md
+
 # next.js
 /.next/
 /out/
