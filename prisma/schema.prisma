@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String
+  businessName   String?
+  logoUrl        String?
+  currency       String    @default("USD")
+  invoicePrefix  String    @default("INV")
+  clients        Client[]
+  invoices       Invoice[]
+  createdAt      DateTime  @default(now())
+}
+
+model Client {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  company   String?
+  address   String?
+  phone     String?
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+}
+
+model Invoice {
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  clientId     String
+  client       Client        @relation(fields: [clientId], references: [id])
+  number       String
+  issueDate    DateTime
+  dueDate      DateTime
+  status       InvoiceStatus @default(DRAFT)
+  taxRate      Float         @default(0)
+  discount     Float         @default(0)
+  notes        String?
+  publicToken  String        @unique @default(cuid())
+  lineItems    LineItem[]
+  createdAt    DateTime      @default(now())
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+}
+
+model LineItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  description String
+  quantity    Float
+  rate        Float
+}
