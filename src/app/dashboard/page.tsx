@@ -1,5 +1,8 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
+import { Users, FileText, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -9,28 +12,23 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar userEmail={session.user.email || ""} />
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-500 text-sm">Logged in as {session.user.email}</p>
+            <h1 className="text-2xl font-bold text-gray-900">Welcome back!</h1>
+            <p className="text-sm text-gray-500">Manage your clients and send invoices with ease.</p>
           </div>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
+          <Link
+            href="/clients"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm"
           >
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition"
-            >
-              Sign Out
-            </button>
-          </form>
+            <Users className="mr-2 h-4 w-4" />
+            Manage Clients
+          </Link>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
