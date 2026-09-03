@@ -12,9 +12,10 @@ import {
 
 interface IncomeChartProps {
   data: { month: string; income: number }[];
+  currencySymbol?: string;
 }
 
-export default function IncomeChart({ data }: IncomeChartProps) {
+export default function IncomeChart({ data, currencySymbol = "$" }: IncomeChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-sm text-neutral-400 font-medium">
@@ -29,9 +30,9 @@ export default function IncomeChart({ data }: IncomeChartProps) {
         <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E5E5" />
           <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#525252", fontSize: 12 }} />
-          <YAxis tickLine={false} axisLine={false} tick={{ fill: "#525252", fontSize: 12 }} tickFormatter={(v) => `$${v}`} />
+          <YAxis tickLine={false} axisLine={false} tick={{ fill: "#525252", fontSize: 12 }} tickFormatter={(v) => `${currencySymbol}${v}`} />
           <Tooltip
-            formatter={(value: any) => [`$${Number(value || 0).toFixed(2)}`, "Income"]}
+            formatter={(value: any) => [`${currencySymbol}${Number(value || 0).toFixed(2)}`, "Income"]}
             contentStyle={{ backgroundColor: "#000000", border: "none", borderRadius: "10px", color: "#FFF" }}
             itemStyle={{ color: "#FFFFFF" }}
           />

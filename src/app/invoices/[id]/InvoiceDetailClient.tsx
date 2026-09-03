@@ -98,9 +98,9 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
 
   const statusColors: Record<string, string> = {
     DRAFT: "bg-neutral-100 text-neutral-700 border-neutral-300",
-    SENT: "bg-neutral-800 text-white border-neutral-900",
-    PAID: "bg-black text-white font-black",
-    OVERDUE: "bg-white text-black border-2 border-black font-black",
+    SENT: "bg-blue-100 text-blue-800 border-blue-300 font-bold",
+    PAID: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+    OVERDUE: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
   };
 
   return (

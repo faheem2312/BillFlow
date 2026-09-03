@@ -15,11 +15,24 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  // Fetch user for logo
+  // Fetch user for logo and currency preference
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { logoUrl: true, email: true },
+    select: { logoUrl: true, email: true, currency: true },
   });
+
+  const getCurrencySymbol = (curr?: string) => {
+    switch (curr) {
+      case "EUR": return "€";
+      case "GBP": return "£";
+      case "INR": return "₹";
+      case "CAD": return "CA$";
+      case "AUD": return "AU$";
+      default: return "$";
+    }
+  };
+
+  const symbol = getCurrencySymbol(user?.currency);
 
   // Fetch all user invoices
   const invoices = await db.invoice.findMany({
@@ -77,9 +90,9 @@ export default async function DashboardPage() {
 
   const statusColors: Record<string, string> = {
     DRAFT: "bg-neutral-100 text-neutral-700 border-neutral-300",
-    SENT: "bg-neutral-800 text-white border-neutral-900",
-    PAID: "bg-black text-white font-black",
-    OVERDUE: "bg-white text-black border-2 border-black font-black",
+    SENT: "bg-blue-100 text-blue-800 border-blue-300 font-bold",
+    PAID: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+    OVERDUE: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
   };
 
   return (
@@ -107,7 +120,7 @@ export default async function DashboardPage() {
           <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Total Earned</p>
-              <h2 className="text-3xl font-black text-black mt-1">${totalEarned.toFixed(2)}</h2>
+              <h2 className="text-3xl font-black text-black mt-1">{symbol}{totalEarned.toFixed(2)}</h2>
               <p className="text-xs text-neutral-600 font-bold mt-1">Paid invoices</p>
             </div>
             <div className="p-3 bg-black text-white rounded-xl">
@@ -119,7 +132,7 @@ export default async function DashboardPage() {
           <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Outstanding</p>
-              <h2 className="text-3xl font-black text-black mt-1">${totalOutstanding.toFixed(2)}</h2>
+              <h2 className="text-3xl font-black text-black mt-1">{symbol}{totalOutstanding.toFixed(2)}</h2>
               <p className="text-xs text-neutral-600 font-bold mt-1">Sent invoices awaiting payment</p>
             </div>
             <div className="p-3 bg-neutral-100 border border-neutral-300 text-black rounded-xl">
@@ -131,7 +144,7 @@ export default async function DashboardPage() {
           <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Overdue</p>
-              <h2 className="text-3xl font-black text-black mt-1">${totalOverdue.toFixed(2)}</h2>
+              <h2 className="text-3xl font-black text-black mt-1">{symbol}{totalOverdue.toFixed(2)}</h2>
               <p className="text-xs text-neutral-600 font-bold mt-1">Invoices past due date</p>
             </div>
             <div className="p-3 bg-neutral-200 text-black rounded-xl">
@@ -143,7 +156,7 @@ export default async function DashboardPage() {
         {/* Income Chart Section */}
         <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm space-y-4">
           <h2 className="text-lg font-black text-black">Income Over Time</h2>
-          <IncomeChart data={chartData} />
+          <IncomeChart data={chartData} currencySymbol={symbol} />
         </div>
 
         {/* Recent Invoices Table */}
@@ -165,14 +178,14 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
+              <table className="w-full text-center border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-neutral-200 bg-neutral-100 text-xs font-bold text-neutral-600 uppercase">
-                    <th className="px-4 py-3">Number</th>
-                    <th className="px-4 py-3">Client</th>
-                    <th className="px-4 py-3">Due Date</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
+                    <th className="px-4 py-3 text-center">Number</th>
+                    <th className="px-4 py-3 text-center">Client</th>
+                    <th className="px-4 py-3 text-center">Due Date</th>
+                    <th className="px-4 py-3 text-center">Status</th>
+                    <th className="px-4 py-3 text-center">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 text-sm">
@@ -190,16 +203,16 @@ export default async function DashboardPage() {
 
                     return (
                       <tr key={inv.id} className="hover:bg-neutral-50 transition">
-                        <td className="px-4 py-3 font-black text-black">
+                        <td className="px-4 py-3 text-center font-black text-black">
                           <Link href={`/invoices/${inv.id}`} className="hover:underline text-black">
                             {inv.number}
                           </Link>
                         </td>
-                        <td className="px-4 py-3 text-neutral-700 font-medium">{inv.client.name}</td>
-                        <td className="px-4 py-3 text-neutral-500">
+                        <td className="px-4 py-3 text-center text-neutral-700 font-medium">{inv.client.name}</td>
+                        <td className="px-4 py-3 text-center text-neutral-500">
                           {new Date(inv.dueDate).toLocaleDateString()}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 text-center">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                               statusColors[derivedStatus] || "bg-neutral-100 text-neutral-700"
@@ -208,8 +221,8 @@ export default async function DashboardPage() {
                             {derivedStatus}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right font-black text-black">
-                          ${total.toFixed(2)}
+                        <td className="px-4 py-3 text-center font-black text-black">
+                          {symbol}{total.toFixed(2)}
                         </td>
                       </tr>
                     );

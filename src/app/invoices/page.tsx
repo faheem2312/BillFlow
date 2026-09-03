@@ -6,7 +6,12 @@ import Link from "next/link";
 import { Plus, FileText, Search, Eye } from "lucide-react";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
+    search?: string;
+    status?: string;
+    clientId?: string;
+    sort?: string;
+  }> | {
     search?: string;
     status?: string;
     clientId?: string;
@@ -22,10 +27,11 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   }
 
   const userId = session.user.id;
-  const search = searchParams.search || "";
-  const statusFilter = searchParams.status || "";
-  const clientIdFilter = searchParams.clientId || "";
-  const sort = searchParams.sort || "newest";
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const search = resolvedSearchParams?.search || "";
+  const statusFilter = resolvedSearchParams?.status || "";
+  const clientIdFilter = resolvedSearchParams?.clientId || "";
+  const sort = resolvedSearchParams?.sort || "newest";
 
   // Build Prisma where clause
   const where: any = { userId };
@@ -34,7 +40,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     where.clientId = clientIdFilter;
   }
 
-  if (search) {
+  if (search.trim()) {
     where.OR = [
       { number: { contains: search, mode: "insensitive" } },
       { client: { name: { contains: search, mode: "insensitive" } } },
@@ -47,24 +53,41 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     where.status = statusFilter;
   }
 
-  // Fetch clients for dropdown filter
-  const clients = await db.client.findMany({
-    where: { userId },
-    select: { id: true, name: true },
-  });
+  // Fetch user currency preference, clients, and invoices concurrently using Promise.all
+  const [user, clients, rawInvoices] = await Promise.all([
+    db.user.findUnique({
+      where: { id: userId },
+      select: { currency: true, logoUrl: true },
+    }),
+    db.client.findMany({
+      where: { userId },
+      select: { id: true, name: true },
+    }),
+    db.invoice.findMany({
+      where,
+      include: {
+        client: true,
+        lineItems: true,
+      },
+      orderBy:
+        sort === "oldest"
+          ? { createdAt: "asc" }
+          : { createdAt: "desc" },
+    }),
+  ]);
 
-  // Fetch invoices with line items and client details
-  const rawInvoices = await db.invoice.findMany({
-    where,
-    include: {
-      client: true,
-      lineItems: true,
-    },
-    orderBy:
-      sort === "oldest"
-        ? { createdAt: "asc" }
-        : { createdAt: "desc" },
-  });
+  const getCurrencySymbol = (curr?: string) => {
+    switch (curr) {
+      case "EUR": return "€";
+      case "GBP": return "£";
+      case "INR": return "₹";
+      case "CAD": return "CA$";
+      case "AUD": return "AU$";
+      default: return "$";
+    }
+  };
+
+  const symbol = getCurrencySymbol(user?.currency);
 
   // Process derived overdue status and total amounts on server
   const now = new Date();
@@ -98,14 +121,14 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
   const statusColors: Record<string, string> = {
     DRAFT: "bg-neutral-100 text-neutral-700 border-neutral-300",
-    SENT: "bg-neutral-800 text-white border-neutral-900",
-    PAID: "bg-black text-white font-black",
-    OVERDUE: "bg-white text-black border-2 border-black font-black",
+    SENT: "bg-blue-100 text-blue-800 border-blue-300 font-bold",
+    PAID: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+    OVERDUE: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
   };
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <Navbar userEmail={session.user.email || ""} />
+      <Navbar userEmail={session.user.email || ""} userLogoUrl={user?.logoUrl} />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -207,31 +230,31 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
             <table className="w-full text-left border-collapse min-w-[640px]">
               <thead>
                 <tr className="border-b border-neutral-200 bg-neutral-100 text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  <th className="px-6 py-3">Number</th>
-                  <th className="px-6 py-3">Client</th>
-                  <th className="px-6 py-3">Issue Date</th>
-                  <th className="px-6 py-3">Due Date</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3 text-right">Amount</th>
-                  <th className="px-6 py-3 text-right">Action</th>
+                  <th className="px-6 py-3 text-center">Number</th>
+                  <th className="px-6 py-3 text-center">Client</th>
+                  <th className="px-6 py-3 text-center">Issue Date</th>
+                  <th className="px-6 py-3 text-center">Due Date</th>
+                  <th className="px-6 py-3 text-center">Status</th>
+                  <th className="px-6 py-3 text-center">Amount</th>
+                  <th className="px-6 py-3 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 text-sm">
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="hover:bg-neutral-50 transition">
-                    <td className="px-6 py-4 font-black text-black">
+                    <td className="px-6 py-4 text-center font-black text-black">
                       <Link href={`/invoices/${inv.id}`} className="hover:underline text-black">
                         {inv.number}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-neutral-700 font-semibold">{inv.client.name}</td>
-                    <td className="px-6 py-4 text-neutral-500">
+                    <td className="px-6 py-4 text-center text-neutral-700 font-semibold">{inv.client.name}</td>
+                    <td className="px-6 py-4 text-center text-neutral-500">
                       {new Date(inv.issueDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-neutral-500">
+                    <td className="px-6 py-4 text-center text-neutral-500">
                       {new Date(inv.dueDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                           statusColors[inv.derivedStatus] || "bg-neutral-100 text-neutral-700"
@@ -240,10 +263,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                         {inv.derivedStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right font-black text-black">
-                      ${inv.total.toFixed(2)}
+                    <td className="px-6 py-4 text-center font-black text-black">
+                      {symbol}{inv.total.toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-center">
                       <Link
                         href={`/invoices/${inv.id}`}
                         className="inline-flex items-center p-1.5 text-neutral-500 hover:text-black hover:bg-neutral-100 rounded-lg transition"

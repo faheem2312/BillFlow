@@ -5,6 +5,8 @@ import { createInvoice, updateInvoice, LineItemInput } from "@/lib/actions/invoi
 import { Plus, Trash2, ArrowLeft, Calculator } from "lucide-react";
 import Link from "next/link";
 
+import { getCurrencySymbol } from "@/lib/currency";
+
 interface Client {
   id: string;
   name: string;
@@ -13,6 +15,7 @@ interface Client {
 
 interface InvoiceFormProps {
   clients: Client[];
+  userCurrency?: string;
   initialData?: {
     id: string;
     clientId: string;
@@ -25,7 +28,8 @@ interface InvoiceFormProps {
   };
 }
 
-export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) {
+export default function InvoiceForm({ clients, userCurrency = "USD", initialData }: InvoiceFormProps) {
+  const symbol = getCurrencySymbol(userCurrency);
   const [clientId, setClientId] = useState(initialData?.clientId || (clients[0]?.id || ""));
   const [issueDate, setIssueDate] = useState(
     initialData
@@ -86,6 +90,11 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
       return;
     }
 
+    if (new Date(dueDate) < new Date(issueDate)) {
+      setError("Due Date cannot be earlier than Issue Date.");
+      return;
+    }
+
     if (lineItems.some((item) => !item.description.trim())) {
       setError("All line items must have a description.");
       return;
@@ -112,6 +121,13 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
     } catch (err: any) {
       setError(err.message || "An error occurred while saving invoice");
       setLoading(false);
+    }
+  };
+
+  const handleIssueDateChange = (newDate: string) => {
+    setIssueDate(newDate);
+    if (dueDate < newDate) {
+      setDueDate(newDate);
     }
   };
 
@@ -182,21 +198,27 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
             <input
               type="date"
               value={issueDate}
-              onChange={(e) => setIssueDate(e.target.value)}
+              onChange={(e) => handleIssueDateChange(e.target.value)}
               className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-black mb-1">Due Date *</label>
+            <label className="block text-sm font-bold text-black mb-1">
+              Due Date *
+            </label>
             <input
               type="date"
+              min={issueDate}
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black disabled:bg-neutral-100"
               required
             />
+            <p className="text-[11px] text-neutral-400 mt-1">
+              Dates before Issue Date ({issueDate}) are disabled.
+            </p>
           </div>
         </div>
       </div>
@@ -237,7 +259,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                   type="number"
                   min="0"
                   step="any"
-                  placeholder="Rate ($)"
+                  placeholder={`Rate (${symbol})`}
                   value={item.rate}
                   onChange={(e) => handleItemChange(index, "rate", e.target.value)}
                   className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
@@ -246,7 +268,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
               </div>
 
               <div className="w-28 text-right font-black text-sm text-black">
-                ${(item.quantity * item.rate).toFixed(2)}
+                {symbol}{(item.quantity * item.rate).toFixed(2)}
               </div>
 
               <button
@@ -294,7 +316,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
           <div className="space-y-3 text-sm border-t border-neutral-200 pt-3">
             <div className="flex justify-between text-neutral-600">
               <span>Subtotal</span>
-              <span className="font-bold text-black">${subtotal.toFixed(2)}</span>
+              <span className="font-bold text-black">{symbol}{subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -325,17 +347,17 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
 
             <div className="flex justify-between text-neutral-500 text-xs">
               <span>Tax Amount</span>
-              <span>+${taxAmount.toFixed(2)}</span>
+              <span>+{symbol}{taxAmount.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-neutral-500 text-xs">
               <span>Discount Amount</span>
-              <span>-${discountAmount.toFixed(2)}</span>
+              <span>-{symbol}{discountAmount.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-base font-black text-black border-t-2 border-black pt-3">
               <span>Total Due</span>
-              <span className="text-black text-lg">${total.toFixed(2)}</span>
+              <span className="text-black text-lg">{symbol}{total.toFixed(2)}</span>
             </div>
           </div>
         </div>

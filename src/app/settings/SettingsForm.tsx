@@ -139,7 +139,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
             <div className="space-y-2">
               <label className="inline-flex items-center px-4 py-2 bg-white border border-neutral-300 rounded-xl font-bold text-xs text-black hover:bg-neutral-100 cursor-pointer shadow-sm">
                 <Upload className="mr-2 h-4 w-4 text-neutral-500" />
-                {uploading ? "Uploading..." : "Upload Logo (Vercel Blob)"}
+                {uploading ? "Uploading..." : "Upload Logo"}
                 <input
                   type="file"
                   accept="image/*"

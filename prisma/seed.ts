@@ -1,17 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, InvoiceStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database for BillFlow...");
+  console.log("🌱 Seeding database for BillFlow (8 Clients & 20 Invoices)...");
 
-  // 1. Create Demo User
+  // 1. Create/Ensure Demo User
   const passwordHash = await bcrypt.hash("Password123!", 10);
 
   const user = await prisma.user.upsert({
     where: { email: "demo@billflow.com" },
-    update: {},
+    update: {
+      passwordHash,
+      businessName: "Apex Creative Studio",
+      currency: "USD",
+      invoicePrefix: "INV",
+    },
     create: {
       email: "demo@billflow.com",
       passwordHash,
@@ -21,82 +26,162 @@ async function main() {
     },
   });
 
-  console.log(`👤 Created Demo User: ${user.email} (ID: ${user.id})`);
+  // Clean existing demo user's data for a fresh seed
+  await prisma.lineItem.deleteMany({
+    where: { invoice: { userId: user.id } },
+  });
+  await prisma.invoice.deleteMany({
+    where: { userId: user.id },
+  });
+  await prisma.client.deleteMany({
+    where: { userId: user.id },
+  });
 
-  // 2. Create Demo Clients
-  const client1 = await prisma.client.create({
-    data: {
-      userId: user.id,
+  console.log(`👤 Demo User ready: ${user.email}`);
+
+  // 2. Create 8 Clients
+  const clientData = [
+    {
       name: "Acme Corporation",
       email: "billing@acme.com",
       company: "Acme Global Inc.",
       address: "100 Innovation Way, Suite 400, San Francisco, CA",
       phone: "+1 (555) 019-2831",
     },
-  });
-
-  const client2 = await prisma.client.create({
-    data: {
-      userId: user.id,
+    {
       name: "Stark Media Group",
       email: "finance@starkmedia.com",
       company: "Stark Industries",
       address: "10880 Wilshire Blvd, Los Angeles, CA",
       phone: "+1 (555) 014-9922",
     },
-  });
+    {
+      name: "Cyberdyne Systems",
+      email: "accounts@cyberdyne.io",
+      company: "Cyberdyne Corp",
+      address: "18144 El Camino Real, Sunnyvale, CA",
+      phone: "+1 (555) 392-1044",
+    },
+    {
+      name: "Wayne Enterprises",
+      email: "ap@wayneenterprises.com",
+      company: "Wayne Global",
+      address: "1007 Mountain Drive, Gotham City, NY",
+      phone: "+1 (555) 882-9901",
+    },
+    {
+      name: "Umbrella Corp",
+      email: "invoices@umbrella.org",
+      company: "Umbrella Health & Bio",
+      address: "500 Raccoon Street, Chicago, IL",
+      phone: "+1 (555) 712-4099",
+    },
+    {
+      name: "Hooli Tech",
+      email: "billing@hooli.com",
+      company: "Hooli Inc.",
+      address: "105 Palo Alto Ave, Palo Alto, CA",
+      phone: "+1 (555) 441-8902",
+    },
+    {
+      name: "Oscorp Industries",
+      email: "finance@oscorp.com",
+      company: "Oscorp BioTech",
+      address: "520 Madison Ave, New York, NY",
+      phone: "+1 (555) 603-1288",
+    },
+    {
+      name: "Pied Piper",
+      email: "admin@piedpiper.com",
+      company: "Pied Piper Compression",
+      address: "21 Silver Terrace, San Jose, CA",
+      phone: "+1 (555) 233-9011",
+    },
+  ];
 
-  console.log(`👥 Created Demo Clients: ${client1.name}, ${client2.name}`);
+  const clients = [];
+  for (const c of clientData) {
+    const created = await prisma.client.create({
+      data: { ...c, userId: user.id },
+    });
+    clients.push(created);
+  }
 
-  // 3. Create Demo Invoices
+  console.log(`👥 Created ${clients.length} Demo Clients.`);
+
+  // 3. Create 20 Invoices
+  const statuses: InvoiceStatus[] = ["PAID", "PAID", "SENT", "SENT", "DRAFT", "PAID", "PAID", "SENT", "DRAFT", "PAID"];
+
+  const sampleItems = [
+    [
+      { description: "Brand Identity Design & Guidelines", quantity: 1, rate: 2500 },
+      { description: "Vector Logo Suite", quantity: 1, rate: 800 },
+    ],
+    [
+      { description: "Next.js App Development", quantity: 40, rate: 95 },
+      { description: "Database Schema Migration", quantity: 10, rate: 120 },
+    ],
+    [
+      { description: "UI/UX Figma Design Kit", quantity: 1, rate: 1800 },
+      { description: "Design System Documentation", quantity: 5, rate: 150 },
+    ],
+    [
+      { description: "Monthly SEO & Analytics Retainer", quantity: 1, rate: 1200 },
+      { description: "Content Optimization Audit", quantity: 1, rate: 450 },
+    ],
+    [
+      { description: "Mobile App Wireframing", quantity: 20, rate: 85 },
+      { description: "Interactive Prototype", quantity: 1, rate: 950 },
+    ],
+  ];
+
   const now = new Date();
-  const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const pastDate = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  const invoicesCreated = [];
 
-  // Invoice 1: PAID
-  const invoicePaid = await prisma.invoice.create({
-    data: {
-      userId: user.id,
-      clientId: client1.id,
-      number: "INV-0001",
-      issueDate: pastDate,
-      dueDate: now,
-      status: "PAID",
-      taxRate: 10,
-      discount: 5,
-      notes: "Thank you for your business! Payment received via online portal.",
-      lineItems: {
-        create: [
-          { description: "Brand Identity Design & Guidelines", quantity: 1, rate: 1500 },
-          { description: "UI/UX Design System Component Library", quantity: 15, rate: 100 },
-        ],
+  for (let i = 1; i <= 20; i++) {
+    const num = `INV-${String(i).padStart(4, "0")}`;
+    const client = clients[(i - 1) % clients.length];
+    const items = sampleItems[(i - 1) % sampleItems.length];
+
+    // Issue date is in the past (e.g. 10 to 90 days ago)
+    const issueDaysAgo = 90 - (i * 4);
+    const issueDate = new Date(now.getTime() - issueDaysAgo * 24 * 60 * 60 * 1000);
+
+    let status: InvoiceStatus = statuses[(i - 1) % statuses.length];
+    let dueDate: Date;
+
+    if (i === 3 || i === 8 || i === 14) {
+      // Overdue: Issued 45 days ago, due 15 days ago (issueDate <= dueDate < now)
+      status = "SENT";
+      dueDate = new Date(issueDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    } else if (status === "PAID") {
+      dueDate = new Date(issueDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    } else {
+      dueDate = new Date(issueDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+    }
+
+    const inv = await prisma.invoice.create({
+      data: {
+        userId: user.id,
+        clientId: client.id,
+        number: num,
+        issueDate,
+        dueDate,
+        status,
+        taxRate: i % 2 === 0 ? 10 : 5,
+        discount: i % 3 === 0 ? 5 : 0,
+        notes: `Standard net 14 payment terms for ${client.name}. Thank you for your business!`,
+        lineItems: {
+          create: items,
+        },
       },
-    },
-  });
+    });
 
-  // Invoice 2: SENT (Active with Public Share Token for Demoing)
-  const invoiceSent = await prisma.invoice.create({
-    data: {
-      userId: user.id,
-      clientId: client2.id,
-      number: "INV-0002",
-      issueDate: now,
-      dueDate: nextWeek,
-      status: "SENT",
-      taxRate: 8,
-      discount: 0,
-      notes: "Net 14 payment terms. Please submit payment via the share link.",
-      lineItems: {
-        create: [
-          { description: "Next.js & Tailwind SaaS Development", quantity: 40, rate: 85 },
-          { description: "PostgreSQL Database Architecture & Optimization", quantity: 10, rate: 110 },
-        ],
-      },
-    },
-  });
+    invoicesCreated.push(inv);
+  }
 
-  console.log(`📄 Created Demo Invoices: ${invoicePaid.number} (PAID) and ${invoiceSent.number} (SENT)`);
-  console.log(`🔗 Public Share Token for ${invoiceSent.number}: ${invoiceSent.publicToken}`);
+  console.log(`📄 Created ${invoicesCreated.length} Demo Invoices.`);
+  console.log(`🔗 Sample Public Token for ${invoicesCreated[1].number}: ${invoicesCreated[1].publicToken}`);
   console.log("✅ Seeding completed successfully!");
 }
 

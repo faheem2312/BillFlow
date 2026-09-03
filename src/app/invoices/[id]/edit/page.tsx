@@ -12,25 +12,31 @@ export default async function EditInvoicePage({ params }: { params: { id: string
     redirect("/login");
   }
 
-  const invoice = await db.invoice.findFirst({
-    where: { id: params.id, userId: session.user.id },
-    include: {
-      lineItems: true,
-    },
-  });
+  const [user, invoice, clients] = await Promise.all([
+    db.user.findUnique({
+      where: { id: session.user.id },
+      select: { currency: true, logoUrl: true, email: true },
+    }),
+    db.invoice.findFirst({
+      where: { id: params.id, userId: session.user.id },
+      include: {
+        lineItems: true,
+      },
+    }),
+    getClients(),
+  ]);
 
   if (!invoice) {
     notFound();
   }
 
-  const clients = await getClients();
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar userEmail={session.user.email || ""} />
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <Navbar userEmail={user?.email || session.user.email || ""} userLogoUrl={user?.logoUrl} />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <InvoiceForm
           clients={clients}
+          userCurrency={user?.currency || "USD"}
           initialData={{
             id: invoice.id,
             clientId: invoice.clientId,
