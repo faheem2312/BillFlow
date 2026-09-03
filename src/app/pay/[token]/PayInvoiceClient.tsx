@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Printer, ArrowLeft, Edit2, Share2, Send, Check } from "lucide-react";
-import { sendInvoiceEmail } from "@/lib/actions/publicInvoice";
+import { markInvoiceAsPaid } from "@/lib/actions/publicInvoice";
+import { CheckCircle2, CreditCard, ShieldCheck, Printer } from "lucide-react";
 
-interface InvoiceDetailProps {
+interface PayInvoiceClientProps {
   invoice: {
     id: string;
     number: string;
@@ -38,41 +37,10 @@ interface InvoiceDetailProps {
   };
 }
 
-export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
-  const [copied, setCopied] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [sentNotice, setSentNotice] = useState("");
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const getPublicLink = () => {
-    return `${window.location.origin}/pay/${invoice.publicToken}`;
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getPublicLink());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
-  };
-
-  const handleSendInvoice = async () => {
-    setSending(true);
-    setSentNotice("");
-
-    try {
-      const res = await sendInvoiceEmail(invoice.id, window.location.origin);
-      navigator.clipboard.writeText(res.shareUrl);
-      setSentNotice("Invoice sent! Public link copied to clipboard.");
-      setTimeout(() => setSentNotice(""), 4000);
-      window.location.reload();
-    } catch (err: any) {
-      alert(err.message || "Failed to send invoice");
-    } finally {
-      setSending(false);
-    }
-  };
+export default function PayInvoiceClient({ invoice }: PayInvoiceClientProps) {
+  const [loading, setLoading] = useState(false);
+  const [paid, setPaid] = useState(invoice.derivedStatus === "PAID");
+  const [error, setError] = useState("");
 
   const subtotal = invoice.lineItems.reduce(
     (acc, item) => acc + item.quantity * item.rate,
@@ -81,6 +49,20 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
   const taxAmount = (subtotal * invoice.taxRate) / 100;
   const discountAmount = (subtotal * invoice.discount) / 100;
   const total = subtotal + taxAmount - discountAmount;
+
+  const handleSimulatedPayment = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      await markInvoiceAsPaid(invoice.publicToken);
+      setPaid(true);
+    } catch (err: any) {
+      setError(err.message || "Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statusColors: Record<string, string> = {
     DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
@@ -91,65 +73,50 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Top Action Bar - Hidden when printing */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-        <Link
-          href="/invoices"
-          className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Invoices
-        </Link>
+      {/* Top Banner / Status Alert */}
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
+        <div className="flex items-center space-x-3">
+          <ShieldCheck className="h-8 w-8 text-blue-600 flex-shrink-0" />
+          <div>
+            <h2 className="font-bold text-gray-900">
+              Invoice from {invoice.user.businessName || invoice.user.email}
+            </h2>
+            <p className="text-xs text-gray-500">
+              Review details below and complete payment via test checkout
+            </p>
+          </div>
+        </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center space-x-3">
           <button
-            onClick={handleCopyLink}
-            className="inline-flex items-center px-3.5 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition"
+            onClick={() => window.print()}
+            className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition flex items-center"
           >
-            {copied ? (
-              <>
-                <Check className="mr-1.5 h-4 w-4 text-green-600" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Share2 className="mr-1.5 h-4 w-4 text-gray-500" />
-                Copy Share Link
-              </>
-            )}
+            <Printer className="mr-2 h-4 w-4" />
+            Print
           </button>
 
-          <button
-            onClick={handleSendInvoice}
-            disabled={sending}
-            className="inline-flex items-center px-3.5 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium rounded-lg transition disabled:opacity-50"
-          >
-            <Send className="mr-1.5 h-4 w-4" />
-            {sending ? "Sending..." : "Send Invoice"}
-          </button>
-
-          <Link
-            href={`/invoices/${invoice.id}/edit`}
-            className="inline-flex items-center px-3.5 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition"
-          >
-            <Edit2 className="mr-1.5 h-4 w-4 text-gray-500" />
-            Edit
-          </Link>
-
-          <button
-            onClick={handlePrint}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm transition"
-          >
-            <Printer className="mr-1.5 h-4 w-4" />
-            Print / Save PDF
-          </button>
+          {paid ? (
+            <div className="flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-2 rounded-lg font-bold text-sm border border-green-200">
+              <CheckCircle2 className="h-5 w-5" />
+              <span>Paid in Full</span>
+            </div>
+          ) : (
+            <button
+              onClick={handleSimulatedPayment}
+              disabled={loading}
+              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-lg shadow transition flex items-center disabled:opacity-50"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              {loading ? "Processing Payment..." : `Pay Now ($${total.toFixed(2)})`}
+            </button>
+          )}
         </div>
       </div>
 
-      {sentNotice && (
-        <div className="p-4 bg-green-50 text-green-700 text-sm font-medium rounded-xl border border-green-200 print:hidden flex items-center space-x-2">
-          <Check className="h-5 w-5 text-green-600" />
-          <span>{sentNotice}</span>
+      {error && (
+        <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200 print:hidden">
+          {error}
         </div>
       )}
 
@@ -170,10 +137,10 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
             <div className="mt-3">
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                  statusColors[invoice.derivedStatus] || "bg-gray-100 text-gray-700"
+                  statusColors[paid ? "PAID" : invoice.derivedStatus] || "bg-gray-100 text-gray-700"
                 }`}
               >
-                {invoice.derivedStatus}
+                {paid ? "PAID" : invoice.derivedStatus}
               </span>
             </div>
           </div>
