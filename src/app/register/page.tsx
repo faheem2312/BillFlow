@@ -43,9 +43,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] px-4">
       <div className="w-full max-w-md space-y-6 rounded-2xl bg-white p-8 shadow-sm border-2 border-neutral-200">
         <div className="text-center space-y-2">
-          <div className="mx-auto h-12 w-12 rounded-xl bg-black text-white font-black text-2xl flex items-center justify-center shadow-md">
-            B
-          </div>
+          <img src="/logo.png" alt="BillFlow" className="mx-auto h-14 w-14 object-contain" />
           <h2 className="text-2xl font-black text-black">Create your BillFlow account</h2>
           <p className="text-xs text-neutral-500 font-medium">Start invoicing your clients today</p>
         </div>

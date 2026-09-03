@@ -6,7 +6,6 @@ import {
   BarChart3,
   ArrowRight,
   Send,
-  Receipt,
 } from "lucide-react";
 
 export default async function LandingPage() {
@@ -18,9 +17,7 @@ export default async function LandingPage() {
       <header className="border-b border-neutral-200 sticky top-0 bg-white/90 backdrop-blur-md z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="h-9 w-9 rounded-xl bg-black flex items-center justify-center text-white font-black shadow-md">
-              <Receipt className="h-5 w-5 text-white stroke-[2.5]" />
-            </div>
+            <img src="/logo.png" alt="BillFlow" className="h-9 w-9 object-contain" />
             <span className="text-xl font-black tracking-tight text-black">BillFlow</span>
           </div>
 
@@ -84,7 +81,7 @@ export default async function LandingPage() {
           </div>
 
           {/* Feature Badge Strip */}
-          <div className="pt-8 flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-neutral-600 uppercase tracking-wider">
+          <div className="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-neutral-500 uppercase tracking-wider pt-6">
             <div className="flex items-center space-x-1.5">
               <CheckCircle2 className="h-4 w-4 text-black" />
               <span>No credit card required</span>
@@ -101,7 +98,7 @@ export default async function LandingPage() {
         </div>
 
         {/* Hero Visual Mockup Card */}
-        <div className="max-w-5xl mx-auto mt-12 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto mt-10 px-4 sm:px-6">
           <div className="bg-black rounded-2xl p-4 sm:p-6 shadow-2xl border border-neutral-800 space-y-4">
             <div className="flex items-center space-x-2 pb-2 border-b border-neutral-800">
               <div className="h-3 w-3 rounded-full bg-neutral-700"></div>
@@ -137,6 +134,7 @@ export default async function LandingPage() {
             </div>
           </div>
         </div>
+
       </section>
 
       {/* Value Pillars Grid */}

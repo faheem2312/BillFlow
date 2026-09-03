@@ -43,9 +43,9 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <div className="print:hidden">
-        <Navbar userEmail={session.user.email || ""} />
+        <Navbar userEmail={session.user.email || ""} userLogoUrl={invoice.user.logoUrl} />
       </div>
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 print:p-0 print:m-0">
         <InvoiceDetailClient invoice={serializableInvoice} />

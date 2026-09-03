@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, FileText, LayoutDashboard, Settings, LogOut, Receipt } from "lucide-react";
+import { Users, FileText, LayoutDashboard, Settings, LogOut, Menu, X } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 interface NavbarProps {
   userEmail?: string;
@@ -12,72 +13,108 @@ interface NavbarProps {
 
 export default function Navbar({ userEmail, userLogoUrl }: NavbarProps) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Clients", href: "/clients", icon: Users },
-    { name: "Invoices", href: "/invoices", icon: FileText },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Clients",   href: "/clients",   icon: Users },
+    { name: "Invoices",  href: "/invoices",  icon: FileText },
+    { name: "Settings",  href: "/settings",  icon: Settings },
   ];
 
   return (
-    <nav className="bg-black border-b border-neutral-800 text-white shadow-md">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between items-center">
-          <div className="flex items-center space-x-8">
-            <Link href="/dashboard" className="flex items-center space-x-3 group">
-              {userLogoUrl ? (
-                <img
-                  src={userLogoUrl}
-                  alt="Business Logo"
-                  className="h-9 max-w-[140px] object-contain rounded-lg"
-                />
-              ) : (
-                <div className="flex items-center space-x-2.5">
-                  <div className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-black font-black shadow-md group-hover:scale-105 transition transform">
-                    <Receipt className="h-5 w-5 text-black stroke-[2.5]" />
-                  </div>
-                  <span className="text-xl font-black tracking-tight text-white group-hover:text-neutral-300 transition">
-                    BillFlow
-                  </span>
-                </div>
-              )}
-            </Link>
+    <div className="w-full flex justify-center pt-4 pb-2 px-4 sticky top-3 z-50">
+      {/* Floating Pill Container with generous max-width */}
+      <nav className="w-full max-w-5xl bg-black rounded-full shadow-2xl shadow-black/40 border border-neutral-800 flex items-center justify-between h-14 px-4">
 
-            <div className="hidden md:flex md:space-x-1 font-medium">
-              {links.map((link) => {
-                const Icon = link.icon;
-                const isActive = pathname.startsWith(link.href);
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={`inline-flex items-center px-3.5 py-2 text-sm font-semibold rounded-lg transition ${
-                      isActive
-                        ? "bg-white text-black font-bold"
-                        : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {link.name}
-                  </Link>
-                );
-              })}
+        {/* Left — Logo */}
+        <Link href="/dashboard" className="flex items-center space-x-2.5 group flex-shrink-0">
+          {userLogoUrl ? (
+            <img
+              src={userLogoUrl}
+              alt="Logo"
+              className="h-8 w-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-200">
+              <img src="/logo.png" alt="BillFlow" className="h-6 w-6 object-contain" />
             </div>
-          </div>
+          )}
+        </Link>
 
-          <div className="flex items-center space-x-4">
-            <span className="text-xs text-neutral-400 font-mono hidden sm:inline">{userEmail}</span>
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="inline-flex items-center px-3 py-1.5 border border-neutral-700 text-xs font-semibold rounded-lg text-neutral-300 hover:bg-neutral-900 hover:text-white transition"
-            >
-              <LogOut className="mr-1.5 h-3.5 w-3.5" />
-              Sign Out
-            </button>
+        {/* Center — Nav links */}
+        <div className="hidden md:flex items-center gap-1 sm:gap-2">
+          {links.map((link) => {
+            const isActive = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-5 py-2 text-sm font-bold rounded-full transition-all duration-150 ${
+                  isActive
+                    ? "bg-white text-black shadow-sm"
+                    : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Right — Email pill + Sign out */}
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+          {userEmail && (
+            <div className="hidden sm:flex items-center px-3.5 py-1.5 rounded-full border border-neutral-800 bg-neutral-900 text-xs font-mono text-neutral-300 max-w-[200px] truncate">
+              {userEmail}
+            </div>
+          )}
+
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Sign Out"
+            className="h-8 w-8 flex items-center justify-center rounded-full border border-neutral-800 text-neutral-400 hover:bg-neutral-900 hover:text-white transition-colors duration-150 flex-shrink-0"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden h-8 w-8 flex items-center justify-center rounded-full border border-neutral-800 text-neutral-400 hover:bg-neutral-900 hover:text-white transition-colors duration-150"
+          >
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Dropdown */}
+      {mobileOpen && (
+        <div className="absolute top-[4.5rem] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm bg-black rounded-2xl border border-neutral-800 shadow-2xl py-3 px-2 z-50 md:hidden">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center px-4 py-3 rounded-xl text-sm font-bold transition-colors w-full ${
+                  isActive
+                    ? "bg-white text-black"
+                    : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
+                }`}
+              >
+                <Icon className="mr-3 h-4 w-4 flex-shrink-0" />
+                {link.name}
+              </Link>
+            );
+          })}
+          <div className="mt-2 pt-2 border-t border-neutral-800 px-4">
+            <p className="text-xs text-neutral-500 font-mono truncate">{userEmail}</p>
           </div>
         </div>
-      </div>
-    </nav>
+      )}
+    </div>
   );
 }
