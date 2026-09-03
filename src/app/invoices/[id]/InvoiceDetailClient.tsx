@@ -19,6 +19,7 @@ interface InvoiceDetailProps {
     publicToken: string;
     user: {
       businessName: string | null;
+      logoUrl: string | null;
       email: string;
       currency: string;
     };
@@ -73,6 +74,19 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
       setSending(false);
     }
   };
+
+  const getCurrencySymbol = (curr?: string) => {
+    switch (curr) {
+      case "EUR": return "€";
+      case "GBP": return "£";
+      case "INR": return "₹";
+      case "CAD": return "CA$";
+      case "AUD": return "AU$";
+      default: return "$";
+    }
+  };
+
+  const symbol = getCurrencySymbol(invoice.user.currency);
 
   const subtotal = invoice.lineItems.reduce(
     (acc, item) => acc + item.quantity * item.rate,
@@ -158,6 +172,13 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
         {/* Header Section */}
         <div className="flex justify-between items-start border-b border-gray-200 pb-8">
           <div>
+            {invoice.user.logoUrl && (
+              <img
+                src={invoice.user.logoUrl}
+                alt="Business Logo"
+                className="h-16 max-w-[200px] object-contain mb-4"
+              />
+            )}
             <h1 className="text-3xl font-black text-gray-900 tracking-tight">INVOICE</h1>
             <p className="text-sm font-mono text-gray-500 mt-1">#{invoice.number}</p>
           </div>
@@ -230,8 +251,8 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
               <tr className="border-b border-gray-300 text-xs font-bold text-gray-500 uppercase tracking-wider">
                 <th className="py-3">Description</th>
                 <th className="py-3 text-center">Qty</th>
-                <th className="py-3 text-right">Rate</th>
-                <th className="py-3 text-right">Amount</th>
+                <th className="py-3 text-right">Rate ({symbol})</th>
+                <th className="py-3 text-right">Amount ({symbol})</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 text-sm">
@@ -239,9 +260,11 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
                 <tr key={item.id}>
                   <td className="py-4 font-medium text-gray-900">{item.description}</td>
                   <td className="py-4 text-center text-gray-600">{item.quantity}</td>
-                  <td className="py-4 text-right text-gray-600">${item.rate.toFixed(2)}</td>
+                  <td className="py-4 text-right text-gray-600">
+                    {symbol}{item.rate.toFixed(2)}
+                  </td>
                   <td className="py-4 text-right font-semibold text-gray-900">
-                    ${(item.quantity * item.rate).toFixed(2)}
+                    {symbol}{(item.quantity * item.rate).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -265,26 +288,26 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
           <div className="w-1/2 max-w-xs space-y-2 text-sm text-right">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+              <span className="font-semibold text-gray-900">{symbol}{subtotal.toFixed(2)}</span>
             </div>
 
             {invoice.taxRate > 0 && (
               <div className="flex justify-between text-gray-600 text-xs">
                 <span>Tax ({invoice.taxRate}%)</span>
-                <span>+${taxAmount.toFixed(2)}</span>
+                <span>+{symbol}{taxAmount.toFixed(2)}</span>
               </div>
             )}
 
             {invoice.discount > 0 && (
               <div className="flex justify-between text-gray-600 text-xs">
                 <span>Discount ({invoice.discount}%)</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>-{symbol}{discountAmount.toFixed(2)}</span>
               </div>
             )}
 
             <div className="flex justify-between border-t border-gray-900 pt-3 text-base font-bold text-gray-900">
               <span>Total Amount</span>
-              <span className="text-blue-600">${total.toFixed(2)}</span>
+              <span className="text-blue-600">{symbol}{total.toFixed(2)}</span>
             </div>
           </div>
         </div>

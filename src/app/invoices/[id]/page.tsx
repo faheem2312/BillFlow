@@ -19,6 +19,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
       user: {
         select: {
           businessName: true,
+          logoUrl: true,
           email: true,
           currency: true,
         },
