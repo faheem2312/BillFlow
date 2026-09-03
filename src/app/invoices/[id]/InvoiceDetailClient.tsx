@@ -97,10 +97,10 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
   const total = subtotal + taxAmount - discountAmount;
 
   const statusColors: Record<string, string> = {
-    DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
-    SENT: "bg-blue-100 text-blue-700 border-blue-200",
-    PAID: "bg-green-100 text-green-700 border-green-200",
-    OVERDUE: "bg-red-100 text-red-700 border-red-200",
+    DRAFT: "bg-neutral-100 text-neutral-700 border-neutral-300",
+    SENT: "bg-neutral-800 text-white border-neutral-900",
+    PAID: "bg-black text-white font-black",
+    OVERDUE: "bg-white text-black border-2 border-black font-black",
   };
 
   return (
@@ -109,7 +109,7 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <Link
           href="/invoices"
-          className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition"
+          className="inline-flex items-center text-sm font-semibold text-neutral-600 hover:text-black transition"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Invoices
@@ -118,16 +118,16 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleCopyLink}
-            className="inline-flex items-center px-3.5 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition"
+            className="inline-flex items-center px-3.5 py-2 border border-neutral-300 text-sm font-bold rounded-xl text-black bg-white hover:bg-neutral-100 transition"
           >
             {copied ? (
               <>
-                <Check className="mr-1.5 h-4 w-4 text-green-600" />
+                <Check className="mr-1.5 h-4 w-4 text-black" />
                 Copied!
               </>
             ) : (
               <>
-                <Share2 className="mr-1.5 h-4 w-4 text-gray-500" />
+                <Share2 className="mr-1.5 h-4 w-4 text-black" />
                 Copy Share Link
               </>
             )}
@@ -136,7 +136,7 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
           <button
             onClick={handleSendInvoice}
             disabled={sending}
-            className="inline-flex items-center px-3.5 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium rounded-lg transition disabled:opacity-50"
+            className="inline-flex items-center px-3.5 py-2 border border-neutral-300 bg-neutral-100 hover:bg-neutral-200 text-black text-sm font-bold rounded-xl transition disabled:opacity-50"
           >
             <Send className="mr-1.5 h-4 w-4" />
             {sending ? "Sending..." : "Send Invoice"}
@@ -144,15 +144,15 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
 
           <Link
             href={`/invoices/${invoice.id}/edit`}
-            className="inline-flex items-center px-3.5 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition"
+            className="inline-flex items-center px-3.5 py-2 border border-neutral-300 text-sm font-bold rounded-xl text-black bg-white hover:bg-neutral-100 transition"
           >
-            <Edit2 className="mr-1.5 h-4 w-4 text-gray-500" />
+            <Edit2 className="mr-1.5 h-4 w-4 text-black" />
             Edit
           </Link>
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm transition"
+            className="inline-flex items-center px-4 py-2 bg-black hover:bg-neutral-800 text-white font-bold text-sm rounded-xl shadow-sm transition"
           >
             <Printer className="mr-1.5 h-4 w-4" />
             Print / Save PDF
@@ -161,16 +161,16 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
       </div>
 
       {sentNotice && (
-        <div className="p-4 bg-green-50 text-green-700 text-sm font-medium rounded-xl border border-green-200 print:hidden flex items-center space-x-2">
-          <Check className="h-5 w-5 text-green-600" />
+        <div className="p-4 bg-black text-white text-sm font-bold rounded-2xl print:hidden flex items-center space-x-2">
+          <Check className="h-5 w-5 text-white" />
           <span>{sentNotice}</span>
         </div>
       )}
 
       {/* Invoice Document Paper */}
-      <div className="bg-white p-8 sm:p-12 rounded-xl border border-gray-200 shadow-sm print:shadow-none print:border-none print:p-0">
+      <div className="bg-white p-8 sm:p-12 rounded-2xl border-2 border-neutral-200 shadow-sm print:shadow-none print:border-none print:p-0">
         {/* Header Section */}
-        <div className="flex justify-between items-start border-b border-gray-200 pb-8">
+        <div className="flex justify-between items-start border-b border-neutral-200 pb-8">
           <div>
             {invoice.user.logoUrl && (
               <img
@@ -179,19 +179,19 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
                 className="h-16 max-w-[200px] object-contain mb-4"
               />
             )}
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">INVOICE</h1>
-            <p className="text-sm font-mono text-gray-500 mt-1">#{invoice.number}</p>
+            <h1 className="text-3xl font-black text-black tracking-tight">INVOICE</h1>
+            <p className="text-sm font-mono text-neutral-500 mt-1">#{invoice.number}</p>
           </div>
 
           <div className="text-right">
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-lg font-bold text-black">
               {invoice.user.businessName || invoice.user.email}
             </h2>
-            <p className="text-sm text-gray-500">{invoice.user.email}</p>
+            <p className="text-sm text-neutral-500">{invoice.user.email}</p>
             <div className="mt-3">
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                  statusColors[invoice.derivedStatus] || "bg-gray-100 text-gray-700"
+                  statusColors[invoice.derivedStatus] || "bg-neutral-100 text-neutral-700"
                 }`}
               >
                 {invoice.derivedStatus}
@@ -203,24 +203,24 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
         {/* Client & Dates Info */}
         <div className="grid grid-cols-2 gap-8 my-8 text-sm">
           <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Billed To</h3>
-            <p className="font-bold text-gray-900 text-base">{invoice.client.name}</p>
+            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Billed To</h3>
+            <p className="font-bold text-black text-base">{invoice.client.name}</p>
             {invoice.client.company && (
-              <p className="text-gray-600 font-medium">{invoice.client.company}</p>
+              <p className="text-neutral-700 font-medium">{invoice.client.company}</p>
             )}
-            {invoice.client.email && <p className="text-gray-500">{invoice.client.email}</p>}
-            {invoice.client.phone && <p className="text-gray-500">{invoice.client.phone}</p>}
+            {invoice.client.email && <p className="text-neutral-500">{invoice.client.email}</p>}
+            {invoice.client.phone && <p className="text-neutral-500">{invoice.client.phone}</p>}
             {invoice.client.address && (
-              <p className="text-gray-500 whitespace-pre-line mt-1">{invoice.client.address}</p>
+              <p className="text-neutral-500 whitespace-pre-line mt-1">{invoice.client.address}</p>
             )}
           </div>
 
           <div className="space-y-2 text-right">
             <div>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider block">
                 Issue Date
               </span>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-black">
                 {new Date(invoice.issueDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
@@ -230,10 +230,10 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
             </div>
 
             <div>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider block">
                 Due Date
               </span>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-black">
                 {new Date(invoice.dueDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
@@ -248,22 +248,22 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
         <div className="my-8">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-gray-300 text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-neutral-300 text-xs font-bold text-neutral-500 uppercase tracking-wider">
                 <th className="py-3">Description</th>
                 <th className="py-3 text-center">Qty</th>
                 <th className="py-3 text-right">Rate ({symbol})</th>
                 <th className="py-3 text-right">Amount ({symbol})</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 text-sm">
+            <tbody className="divide-y divide-neutral-200 text-sm">
               {invoice.lineItems.map((item) => (
                 <tr key={item.id}>
-                  <td className="py-4 font-medium text-gray-900">{item.description}</td>
-                  <td className="py-4 text-center text-gray-600">{item.quantity}</td>
-                  <td className="py-4 text-right text-gray-600">
+                  <td className="py-4 font-bold text-black">{item.description}</td>
+                  <td className="py-4 text-center text-neutral-600 font-medium">{item.quantity}</td>
+                  <td className="py-4 text-right text-neutral-600 font-medium">
                     {symbol}{item.rate.toFixed(2)}
                   </td>
-                  <td className="py-4 text-right font-semibold text-gray-900">
+                  <td className="py-4 text-right font-black text-black">
                     {symbol}{(item.quantity * item.rate).toFixed(2)}
                   </td>
                 </tr>
@@ -273,41 +273,41 @@ export default function InvoiceDetailClient({ invoice }: InvoiceDetailProps) {
         </div>
 
         {/* Totals Summary */}
-        <div className="flex justify-between items-start border-t border-gray-200 pt-6">
+        <div className="flex justify-between items-start border-t border-neutral-200 pt-6">
           <div className="w-1/2 pr-4">
             {invoice.notes && (
               <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">
                   Notes / Payment Terms
                 </h4>
-                <p className="text-xs text-gray-600 whitespace-pre-line">{invoice.notes}</p>
+                <p className="text-xs text-neutral-600 whitespace-pre-line font-medium">{invoice.notes}</p>
               </div>
             )}
           </div>
 
           <div className="w-1/2 max-w-xs space-y-2 text-sm text-right">
-            <div className="flex justify-between text-gray-600">
+            <div className="flex justify-between text-neutral-600">
               <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">{symbol}{subtotal.toFixed(2)}</span>
+              <span className="font-bold text-black">{symbol}{subtotal.toFixed(2)}</span>
             </div>
 
             {invoice.taxRate > 0 && (
-              <div className="flex justify-between text-gray-600 text-xs">
+              <div className="flex justify-between text-neutral-600 text-xs">
                 <span>Tax ({invoice.taxRate}%)</span>
                 <span>+{symbol}{taxAmount.toFixed(2)}</span>
               </div>
             )}
 
             {invoice.discount > 0 && (
-              <div className="flex justify-between text-gray-600 text-xs">
+              <div className="flex justify-between text-neutral-600 text-xs">
                 <span>Discount ({invoice.discount}%)</span>
                 <span>-{symbol}{discountAmount.toFixed(2)}</span>
               </div>
             )}
 
-            <div className="flex justify-between border-t border-gray-900 pt-3 text-base font-bold text-gray-900">
+            <div className="flex justify-between border-t-2 border-black pt-3 text-base font-black text-black">
               <span>Total Amount</span>
-              <span className="text-blue-600">{symbol}{total.toFixed(2)}</span>
+              <span className="text-black text-lg">{symbol}{total.toFixed(2)}</span>
             </div>
           </div>
         </div>

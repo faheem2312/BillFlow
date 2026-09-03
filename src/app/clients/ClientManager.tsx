@@ -70,12 +70,12 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
-          <p className="text-sm text-gray-500">Manage your clients and contact information</p>
+          <h1 className="text-2xl font-bold text-stone-900">Clients</h1>
+          <p className="text-sm text-stone-500">Manage your clients and contact information</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm transition"
+          className="inline-flex items-center px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-semibold text-sm rounded-xl shadow-sm transition"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Client
@@ -84,14 +84,14 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
 
       {/* Empty State */}
       {clients.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm">
-          <User className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">No clients found</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating your first client.</p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-stone-200/80 shadow-sm">
+          <User className="mx-auto h-12 w-12 text-stone-400" />
+          <h3 className="mt-2 text-sm font-semibold text-stone-900">No clients found</h3>
+          <p className="mt-1 text-sm text-stone-500">Get started by creating your first client.</p>
           <div className="mt-6">
             <button
               onClick={() => handleOpenModal()}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm"
+              className="inline-flex items-center px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-semibold text-sm rounded-xl shadow-sm"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Client
@@ -104,14 +104,14 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
           {clients.map((client) => (
             <div
               key={client.id}
-              className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition space-y-4 flex flex-col justify-between"
+              className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-gray-900 text-lg">{client.name}</h3>
+                    <h3 className="font-bold text-stone-900 text-lg">{client.name}</h3>
                     {client.company && (
-                      <div className="flex items-center text-sm text-gray-500 mt-0.5">
+                      <div className="flex items-center text-sm text-amber-800 font-medium mt-0.5">
                         <Building className="h-3.5 w-3.5 mr-1" />
                         {client.company}
                       </div>
@@ -119,39 +119,39 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-sm text-gray-600">
+                <div className="space-y-1.5 text-sm text-stone-600">
                   <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                    <a href={`mailto:${client.email}`} className="hover:underline text-blue-600">
+                    <Mail className="h-4 w-4 mr-2 text-stone-400" />
+                    <a href={`mailto:${client.email}`} className="hover:underline text-amber-800 font-medium">
                       {client.email}
                     </a>
                   </div>
                   {client.phone && (
                     <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                      <Phone className="h-4 w-4 mr-2 text-stone-400" />
                       {client.phone}
                     </div>
                   )}
                   {client.address && (
                     <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                      <MapPin className="h-4 w-4 mr-2 text-stone-400" />
                       {client.address}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 flex justify-end space-x-2">
+              <div className="pt-4 border-t border-stone-100 flex justify-end space-x-2">
                 <button
                   onClick={() => handleOpenModal(client)}
-                  className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  className="p-2 text-stone-500 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition"
                   title="Edit Client"
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(client.id)}
-                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                  className="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                   title="Delete Client"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -164,78 +164,78 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
 
       {/* Modal Dialog */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl relative border border-stone-200">
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-600"
             >
               <X className="h-5 w-5" />
             </button>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl font-bold text-stone-900 mb-4">
               {editingClient ? "Edit Client" : "Add New Client"}
             </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
+              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Client Name *</label>
+                <label className="block text-sm font-medium text-stone-700">Client Name *</label>
                 <input
                   type="text"
                   name="name"
                   required
                   defaultValue={editingClient?.name || ""}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-700"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email Address *</label>
+                <label className="block text-sm font-medium text-stone-700">Email Address *</label>
                 <input
                   type="email"
                   name="email"
                   required
                   defaultValue={editingClient?.email || ""}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-700"
                   placeholder="john@example.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Company Name</label>
+                <label className="block text-sm font-medium text-stone-700">Company Name</label>
                 <input
                   type="text"
                   name="company"
                   defaultValue={editingClient?.company || ""}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-700"
                   placeholder="Acme Corp"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <label className="block text-sm font-medium text-stone-700">Phone</label>
                 <input
                   type="text"
                   name="phone"
                   defaultValue={editingClient?.phone || ""}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-700"
                   placeholder="+1 (555) 000-0000"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <label className="block text-sm font-medium text-stone-700">Address</label>
                 <textarea
                   name="address"
                   rows={2}
                   defaultValue={editingClient?.address || ""}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-700"
                   placeholder="123 Main St, City, Country"
                 />
               </div>
@@ -244,14 +244,14 @@ export default function ClientManager({ initialClients }: { initialClients: Clie
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                  className="px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-sm disabled:opacity-50"
                 >
                   {loading ? "Saving..." : editingClient ? "Update Client" : "Create Client"}
                 </button>

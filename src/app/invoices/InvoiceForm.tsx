@@ -122,42 +122,42 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
         <div className="flex items-center space-x-3">
           <Link
             href="/invoices"
-            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+            className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-xl transition"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-black text-black tracking-tight">
               {initialData ? "Edit Invoice" : "Create New Invoice"}
             </h1>
-            <p className="text-sm text-gray-500">Fill in the invoice details and line items below</p>
+            <p className="text-sm text-neutral-500 font-medium">Fill in the invoice details and line items below</p>
           </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm disabled:opacity-50 transition"
+          className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-sm rounded-xl shadow-sm disabled:opacity-50 transition"
         >
           {loading ? "Saving Invoice..." : initialData ? "Update Invoice" : "Save Invoice"}
         </button>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
+        <div className="p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200 font-medium">
           {error}
         </div>
       )}
 
       {/* Main Details Card */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+      <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Select Client *</label>
+            <label className="block text-sm font-bold text-black mb-1">Select Client *</label>
             {clients.length === 0 ? (
-              <p className="text-sm text-red-500">
+              <p className="text-sm text-red-500 font-medium">
                 No clients found.{" "}
-                <Link href="/clients" className="underline font-semibold">
+                <Link href="/clients" className="underline font-bold text-black">
                   Add a client first
                 </Link>
               </p>
@@ -165,7 +165,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
               <select
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                 required
               >
                 {clients.map((c) => (
@@ -178,23 +178,23 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Issue Date *</label>
+            <label className="block text-sm font-bold text-black mb-1">Issue Date *</label>
             <input
               type="date"
               value={issueDate}
               onChange={(e) => setIssueDate(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date *</label>
+            <label className="block text-sm font-bold text-black mb-1">Due Date *</label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
           </div>
@@ -202,8 +202,8 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
       </div>
 
       {/* Line Items Card */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-        <h2 className="text-lg font-bold text-gray-900">Line Items</h2>
+      <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm space-y-4">
+        <h2 className="text-lg font-black text-black">Line Items</h2>
 
         <div className="space-y-3">
           {lineItems.map((item, index) => (
@@ -214,7 +214,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                   placeholder="Item description"
                   value={item.description}
                   onChange={(e) => handleItemChange(index, "description", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
               </div>
@@ -227,7 +227,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                   placeholder="Qty"
                   value={item.quantity}
                   onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
               </div>
@@ -240,12 +240,12 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                   placeholder="Rate ($)"
                   value={item.rate}
                   onChange={(e) => handleItemChange(index, "rate", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
               </div>
 
-              <div className="w-28 text-right font-medium text-sm text-gray-700">
+              <div className="w-28 text-right font-black text-sm text-black">
                 ${(item.quantity * item.rate).toFixed(2)}
               </div>
 
@@ -253,7 +253,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                 type="button"
                 onClick={() => handleRemoveItem(index)}
                 disabled={lineItems.length === 1}
-                className="p-2 text-gray-400 hover:text-red-600 disabled:opacity-30 transition"
+                className="p-2 text-neutral-400 hover:text-red-600 disabled:opacity-30 transition"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -264,7 +264,7 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
         <button
           type="button"
           onClick={handleAddItem}
-          className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition"
+          className="inline-flex items-center px-4 py-2 border-2 border-black text-sm font-bold rounded-xl text-black hover:bg-neutral-100 transition"
         >
           <Plus className="mr-1.5 h-4 w-4" />
           Add Item
@@ -273,32 +273,32 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
 
       {/* Math Summary & Notes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-          <label className="block text-sm font-medium text-gray-700">Notes / Payment Terms</label>
+        <div className="bg-white p-6 rounded-2xl border-2 border-neutral-200 shadow-sm space-y-4">
+          <label className="block text-sm font-bold text-black">Notes / Payment Terms</label>
           <textarea
             rows={4}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
             placeholder="Thank you for your business! Payment due within 14 days."
           />
         </div>
 
         {/* Real-time Math Summary Card */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-          <h3 className="font-bold text-gray-900 flex items-center">
-            <Calculator className="h-4 w-4 mr-2 text-blue-600" />
+        <div className="bg-white p-6 rounded-2xl border-2 border-black shadow-sm space-y-4">
+          <h3 className="font-black text-black flex items-center">
+            <Calculator className="h-4 w-4 mr-2 text-black" />
             Summary
           </h3>
 
-          <div className="space-y-3 text-sm border-t border-gray-100 pt-3">
-            <div className="flex justify-between text-gray-600">
+          <div className="space-y-3 text-sm border-t border-neutral-200 pt-3">
+            <div className="flex justify-between text-neutral-600">
               <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+              <span className="font-bold text-black">${subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Tax Rate (%)</span>
+              <span className="text-neutral-600 font-medium">Tax Rate (%)</span>
               <input
                 type="number"
                 min="0"
@@ -306,12 +306,12 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                 step="any"
                 value={taxRate}
                 onChange={(e) => setTaxRate(Number(e.target.value) || 0)}
-                className="w-20 text-right rounded-md border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-20 text-right rounded-lg border border-neutral-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Discount (%)</span>
+              <span className="text-neutral-600 font-medium">Discount (%)</span>
               <input
                 type="number"
                 min="0"
@@ -319,23 +319,23 @@ export default function InvoiceForm({ clients, initialData }: InvoiceFormProps) 
                 step="any"
                 value={discount}
                 onChange={(e) => setDiscount(Number(e.target.value) || 0)}
-                className="w-20 text-right rounded-md border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-20 text-right rounded-lg border border-neutral-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
 
-            <div className="flex justify-between text-gray-600 text-xs">
+            <div className="flex justify-between text-neutral-500 text-xs">
               <span>Tax Amount</span>
               <span>+${taxAmount.toFixed(2)}</span>
             </div>
 
-            <div className="flex justify-between text-gray-600 text-xs">
+            <div className="flex justify-between text-neutral-500 text-xs">
               <span>Discount Amount</span>
               <span>-${discountAmount.toFixed(2)}</span>
             </div>
 
-            <div className="flex justify-between text-base font-bold text-gray-900 border-t border-gray-200 pt-3">
+            <div className="flex justify-between text-base font-black text-black border-t-2 border-black pt-3">
               <span>Total Due</span>
-              <span className="text-blue-600">${total.toFixed(2)}</span>
+              <span className="text-black text-lg">${total.toFixed(2)}</span>
             </div>
           </div>
         </div>
