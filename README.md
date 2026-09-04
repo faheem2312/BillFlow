@@ -8,9 +8,9 @@ Built as part of the **Full Stack Intern (AI)** technical assessment.
 
 ## 🌐 Quick Links & Demo Access
 
-* **🚀 Live Deployed Website**: [https://your-billflow-app.vercel.app](https://your-billflow-app.vercel.app) *(Replace with your Vercel URL)*
-* **📁 GitHub Repository**: [https://github.com/your-username/billflow](https://github.com/your-username/billflow)
-* **📹 5-Minute Video Walkthrough**: [Link to Loom / Google Drive Video]
+* **🚀 Live Deployed Website**: [https://billflow-brown.vercel.app](https://billflow-brown.vercel.app)
+* **📁 GitHub Repository**: [https://github.com/faheem2312/BillFlow](https://github.com/faheem2312/BillFlow)
+* **📹 5-Minute Video Walkthrough**: [Link to Loom / Google Drive Video] *(Add your Loom recording URL here)*
 
 ### 🔑 Pre-Seeded Demo Credentials
 You can immediately test the live application without registering:
@@ -106,7 +106,7 @@ You can immediately test the live application without registering:
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/your-username/billflow.git
+git clone https://github.com/faheem2312/BillFlow.git
 cd billflow
 npm install
 ```
@@ -120,6 +120,7 @@ DATABASE_URL="postgresql://user:password@host/neondb?sslmode=require&connect_tim
 
 # Auth.js secret key (generate with: npx auth secret or openssl rand -hex 32)
 AUTH_SECRET="your-32-character-secret-key-here"
+AUTH_TRUST_HOST="true"
 
 # Optional: Resend API Key for live email sending
 RESEND_API_KEY="re_your_api_key_here"
@@ -152,6 +153,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```
 billflow/
 ├── prisma/
+│   ├── migrations/         # PostgreSQL migration files (initial baseline)
 │   ├── schema.prisma       # Prisma database models (User, Client, Invoice, LineItem)
 │   └── seed.ts             # Database seeder (8 clients & 20 invoices)
 ├── public/
