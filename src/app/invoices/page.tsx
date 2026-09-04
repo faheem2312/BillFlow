@@ -57,7 +57,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const [user, clients, rawInvoices] = await Promise.all([
     db.user.findUnique({
       where: { id: userId },
-      select: { currency: true, logoUrl: true },
+      select: { currency: true, logoUrl: true, businessName: true },
     }),
     db.client.findMany({
       where: { userId },
@@ -128,7 +128,11 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <Navbar userEmail={session.user.email || ""} userLogoUrl={user?.logoUrl} />
+      <Navbar
+        userEmail={session.user.email || ""}
+        businessName={user?.businessName}
+        userLogoUrl={user?.logoUrl}
+      />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

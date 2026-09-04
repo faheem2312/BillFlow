@@ -8,10 +8,11 @@ import { useState } from "react";
 
 interface NavbarProps {
   userEmail?: string;
+  businessName?: string | null;
   userLogoUrl?: string | null;
 }
 
-export default function Navbar({ userEmail, userLogoUrl }: NavbarProps) {
+export default function Navbar({ userEmail, businessName, userLogoUrl }: NavbarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -21,6 +22,9 @@ export default function Navbar({ userEmail, userLogoUrl }: NavbarProps) {
     { name: "Invoices",  href: "/invoices",  icon: FileText },
     { name: "Settings",  href: "/settings",  icon: Settings },
   ];
+
+  const displayName = businessName?.trim() || userEmail || "";
+  const displayAvatar = userLogoUrl || "/logo.png";
 
   return (
     <div className="w-full flex justify-center pt-4 pb-2 px-4 sticky top-3 z-50">
@@ -62,11 +66,14 @@ export default function Navbar({ userEmail, userLogoUrl }: NavbarProps) {
           })}
         </div>
 
-        {/* Right — Email pill + Sign out */}
+        {/* Right — Business Name / Email Pill with Logo Avatar */}
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          {userEmail && (
-            <div className="hidden sm:flex items-center px-3.5 py-1.5 rounded-full border border-neutral-800 bg-neutral-900 text-xs font-mono text-neutral-300 max-w-[200px] truncate">
-              {userEmail}
+          {displayName && (
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900 text-xs font-semibold text-neutral-200 max-w-[220px]">
+              <div className="h-5 w-5 rounded-full bg-white flex items-center justify-center overflow-hidden flex-shrink-0 border border-neutral-700">
+                <img src={displayAvatar} alt="User Avatar" className="h-full w-full object-contain" />
+              </div>
+              <span className="truncate">{displayName}</span>
             </div>
           )}
 

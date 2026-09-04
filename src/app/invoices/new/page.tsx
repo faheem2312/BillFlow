@@ -15,14 +15,18 @@ export default async function NewInvoicePage() {
   const [user, clients] = await Promise.all([
     db.user.findUnique({
       where: { id: session.user.id },
-      select: { currency: true, logoUrl: true, email: true },
+      select: { currency: true, logoUrl: true, email: true, businessName: true },
     }),
     getClients(),
   ]);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <Navbar userEmail={user?.email || session.user.email || ""} userLogoUrl={user?.logoUrl} />
+      <Navbar
+        userEmail={user?.email || session.user.email || ""}
+        businessName={user?.businessName}
+        userLogoUrl={user?.logoUrl}
+      />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <InvoiceForm clients={clients} userCurrency={user?.currency || "USD"} />
       </main>

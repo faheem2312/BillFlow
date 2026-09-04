@@ -15,10 +15,10 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  // Fetch user for logo and currency preference
+  // Fetch user for logo, businessName, and currency preference
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { logoUrl: true, email: true, currency: true },
+    select: { logoUrl: true, email: true, businessName: true, currency: true },
   });
 
   const getCurrencySymbol = (curr?: string) => {
@@ -97,7 +97,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <Navbar userEmail={user?.email || session.user.email || ""} userLogoUrl={user?.logoUrl} />
+      <Navbar
+        userEmail={user?.email || session.user.email || ""}
+        businessName={user?.businessName}
+        userLogoUrl={user?.logoUrl}
+      />
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="flex justify-between items-center">

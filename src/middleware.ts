@@ -3,7 +3,22 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  const isHttps = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https";
+
+  let token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+    secureCookie: isHttps,
+  });
+
+  if (!token) {
+    token = await getToken({
+      req,
+      secret: process.env.AUTH_SECRET,
+      secureCookie: !isHttps,
+    });
+  }
+
   const { pathname } = req.nextUrl;
 
   const protectedRoutes = ["/dashboard", "/clients", "/invoices", "/settings"];
