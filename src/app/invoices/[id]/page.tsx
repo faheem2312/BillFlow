@@ -4,7 +4,12 @@ import { db } from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import InvoiceDetailClient from "./InvoiceDetailClient";
 
-export default async function InvoiceDetailPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function InvoiceDetailPage({ params }: PageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -12,7 +17,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
   }
 
   const invoice = await db.invoice.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
     include: {
       client: true,
       lineItems: true,

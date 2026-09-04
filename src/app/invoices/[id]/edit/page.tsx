@@ -5,7 +5,12 @@ import { getClients } from "@/lib/actions/clients";
 import Navbar from "@/components/Navbar";
 import InvoiceForm from "../../InvoiceForm";
 
-export default async function EditInvoicePage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditInvoicePage({ params }: PageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -18,7 +23,7 @@ export default async function EditInvoicePage({ params }: { params: { id: string
       select: { currency: true, logoUrl: true, email: true, businessName: true },
     }),
     db.invoice.findFirst({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
       include: {
         lineItems: true,
       },

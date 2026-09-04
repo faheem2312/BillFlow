@@ -2,9 +2,14 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/prisma";
 import PayInvoiceClient from "./PayInvoiceClient";
 
-export default async function PublicInvoicePage({ params }: { params: { token: string } }) {
+interface PageProps {
+  params: Promise<{ token: string }>;
+}
+
+export default async function PublicInvoicePage({ params }: PageProps) {
+  const { token } = await params;
   const invoice = await db.invoice.findUnique({
-    where: { publicToken: params.token },
+    where: { publicToken: token },
     include: {
       client: true,
       lineItems: true,
